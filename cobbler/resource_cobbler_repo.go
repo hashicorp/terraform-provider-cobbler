@@ -104,9 +104,8 @@ func resourceRepo() *schema.Resource {
 			},
 
 			"yumopts": &schema.Schema{
-				Type:     schema.TypeList,
+				Type:     schema.TypeMap,
 				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
 				Computed: true,
 			},
 		},
@@ -209,9 +208,13 @@ func buildRepo(d *schema.ResourceData, meta interface{}) cobbler.Repo {
 		rpmList = append(rpmList, i.(string))
 	}
 
-	yumOpts := []string{}
-	for _, i := range d.Get("yum_opts").([]interface{}) {
-		yumOpts = append(yumOpts, i.(string))
+	yumOpts := make(map[string]interface{})
+	y := d.Get("yum_opts")
+	if y != nil {
+		m := y.(map[string]interface{})
+		for k, v := range m {
+			yumOpts[k] = v
+		}
 	}
 
 	repo := cobbler.Repo{
