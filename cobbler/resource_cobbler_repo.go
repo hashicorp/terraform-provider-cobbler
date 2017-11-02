@@ -103,11 +103,11 @@ func resourceRepo() *schema.Resource {
 				Computed: true,
 			},
 
-			"yumopts": &schema.Schema{
-				Type:     schema.TypeMap,
-				Optional: true,
-				Computed: true,
-			},
+			//"yumopts": &schema.Schema{
+			//	Type:     schema.TypeMap,
+			//	Optional: true,
+			//	Computed: true,
+			//},
 		},
 	}
 }
@@ -154,7 +154,7 @@ func resourceRepoRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("owners", repo.Owners)
 	d.Set("proxy", repo.Proxy)
 	d.Set("rpm_list", repo.RpmList)
-	d.Set("yumopts", repo.YumOpts)
+	//d.Set("yumopts", repo.YumOpts)
 
 	return nil
 }
@@ -208,14 +208,14 @@ func buildRepo(d *schema.ResourceData, meta interface{}) cobbler.Repo {
 		rpmList = append(rpmList, i.(string))
 	}
 
-	yumOpts := make(map[string]interface{})
-	y := d.Get("yum_opts")
-	if y != nil {
-		m := y.(map[string]interface{})
-		for k, v := range m {
-			yumOpts[k] = v
-		}
-	}
+	//yumOpts := make(map[string]interface{})
+	//y := d.Get("yum_opts")
+	//if y != nil {
+	//	m := y.(map[string]interface{})
+	//	for k, v := range m {
+	//		yumOpts[k] = v
+	//	}
+	//}
 
 	repo := cobbler.Repo{
 		AptComponents:   aptComponents,
@@ -232,7 +232,7 @@ func buildRepo(d *schema.ResourceData, meta interface{}) cobbler.Repo {
 		Owners:          owners,
 		Proxy:           d.Get("proxy").(string),
 		RpmList:         rpmList,
-		YumOpts:         yumOpts,
+		//YumOpts:         yumOpts,
 	}
 
 	return repo
