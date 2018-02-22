@@ -41,7 +41,7 @@ func Provider() terraform.ResourceProvider {
 			"cacert_file": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: envDefaultFunc("COBBLER_CACERT"),
+				DefaultFunc: envDefaultFunc("COBBLER_CACERT_FILE"),
 				Description: "The path or contents of an SSL CA certificate",
 			},
 		},
