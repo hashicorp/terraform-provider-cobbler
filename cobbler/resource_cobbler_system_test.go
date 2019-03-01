@@ -14,6 +14,7 @@ func TestAccCobblerSystem_basic(t *testing.T) {
 	var distro cobbler.Distro
 	var profile cobbler.Profile
 	var system cobbler.System
+	repoName := os.Getenv("TF_COBBLER_REPO_NAME")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccCobblerPreCheck(t) },
@@ -21,7 +22,7 @@ func TestAccCobblerSystem_basic(t *testing.T) {
 		CheckDestroy: testAccCobblerCheckSystemDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCobblerSystem_basic,
+				Config: testAccCobblerSystem_basic(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -36,6 +37,7 @@ func TestAccCobblerSystem_multi(t *testing.T) {
 	var distro cobbler.Distro
 	var profile cobbler.Profile
 	var system cobbler.System
+	repoName := os.Getenv("TF_COBBLER_REPO_NAME")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccCobblerPreCheck(t) },
@@ -43,7 +45,7 @@ func TestAccCobblerSystem_multi(t *testing.T) {
 		CheckDestroy: testAccCobblerCheckSystemDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCobblerSystem_multi,
+				Config: testAccCobblerSystem_multi(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -58,6 +60,7 @@ func TestAccCobblerSystem_change(t *testing.T) {
 	var distro cobbler.Distro
 	var profile cobbler.Profile
 	var system cobbler.System
+	repoName := os.Getenv("TF_COBBLER_REPO_NAME")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccCobblerPreCheck(t) },
@@ -65,7 +68,7 @@ func TestAccCobblerSystem_change(t *testing.T) {
 		CheckDestroy: testAccCobblerCheckSystemDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCobblerSystem_change_1,
+				Config: testAccCobblerSystem_change_1(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -73,7 +76,7 @@ func TestAccCobblerSystem_change(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCobblerSystem_change_2,
+				Config: testAccCobblerSystem_change_2(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -88,6 +91,7 @@ func TestAccCobblerSystem_removeInterface(t *testing.T) {
 	var distro cobbler.Distro
 	var profile cobbler.Profile
 	var system cobbler.System
+	repoName := os.Getenv("TF_COBBLER_REPO_NAME")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccCobblerPreCheck(t) },
@@ -95,7 +99,7 @@ func TestAccCobblerSystem_removeInterface(t *testing.T) {
 		CheckDestroy: testAccCobblerCheckSystemDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCobblerSystem_removeInterface_1,
+				Config: testAccCobblerSystem_removeInterface_1(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -105,7 +109,7 @@ func TestAccCobblerSystem_removeInterface(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCobblerSystem_removeInterface_2,
+				Config: testAccCobblerSystem_removeInterface_2(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -160,14 +164,15 @@ func testAccCobblerCheckSystemExists(t *testing.T, n string, system *cobbler.Sys
 	}
 }
 
-var testAccCobblerSystem_basic = `
+func testAccCobblerSystem_basic(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
@@ -198,16 +203,18 @@ var testAccCobblerSystem_basic = `
 			netmask = "255.255.255.0"
 		}
 
-	}`
+	}`, repoName)
+}
 
-var testAccCobblerSystem_multi = `
+func testAccCobblerSystem_multi(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
@@ -217,7 +224,7 @@ var testAccCobblerSystem_multi = `
 
 	resource "cobbler_system" "foo" {
 		count = 50
-		name = "${format("foo-%d", count.index)}"
+		name = "${format("foo-%%d", count.index)}"
 		profile = "${cobbler_profile.foo.name}"
 		name_servers = ["8.8.8.8", "8.8.4.4"]
 		comment = "I'm a system"
@@ -230,16 +237,18 @@ var testAccCobblerSystem_multi = `
 		interface {
 			name = "eth1"
 		}
-	}`
+	}`, repoName)
+}
 
-var testAccCobblerSystem_change_1 = `
+func testAccCobblerSystem_change_1(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
@@ -270,16 +279,18 @@ var testAccCobblerSystem_change_1 = `
 			netmask = "255.255.255.0"
 		}
 
-	}`
+	}`, repoName)
+}
 
-var testAccCobblerSystem_change_2 = `
+func testAccCobblerSystem_change_2(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
@@ -310,16 +321,18 @@ var testAccCobblerSystem_change_2 = `
 			netmask = "255.255.255.0"
 		}
 
-	}`
+	}`, repoName)
+}
 
-var testAccCobblerSystem_removeInterface_1 = `
+func testAccCobblerSystem_removeInterface_1(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
@@ -350,16 +363,18 @@ var testAccCobblerSystem_removeInterface_1 = `
 			management = true
 		}
 
-	}`
+	}`, repoName)
+}
 
-var testAccCobblerSystem_removeInterface_2 = `
+func testAccCobblerSystem_removeInterface_2(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
@@ -380,4 +395,5 @@ var testAccCobblerSystem_removeInterface_2 = `
 			ip_address = "1.2.3.4"
 			netmask = "255.255.255.0"
 		}
-	}`
+	}`, repoName)
+}

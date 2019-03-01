@@ -13,6 +13,7 @@ import (
 func TestAccCobblerProfile_basic(t *testing.T) {
 	var distro cobbler.Distro
 	var profile cobbler.Profile
+	repoName := os.Getenv("TF_COBBLER_REPO_NAME")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccCobblerPreCheck(t) },
@@ -20,7 +21,7 @@ func TestAccCobblerProfile_basic(t *testing.T) {
 		CheckDestroy: testAccCobblerCheckProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCobblerProfile_basic,
+				Config: testAccCobblerProfile_basic(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -40,14 +41,14 @@ func TestAccCobblerProfile_change(t *testing.T) {
 		CheckDestroy: testAccCobblerCheckProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCobblerProfile_change_1,
+				Config: testAccCobblerProfile_change_1(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
 				),
 			},
 			{
-				Config: testAccCobblerProfile_change_2,
+				Config: testAccCobblerProfile_change_2(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -67,7 +68,7 @@ func TestAccCobblerProfile_withRepo(t *testing.T) {
 		CheckDestroy: testAccCobblerCheckProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCobblerProfile_withRepo,
+				Config: testAccCobblerProfile_withRepo(repoName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCobblerCheckDistroExists(t, "cobbler_distro.foo", &distro),
 					testAccCobblerCheckProfileExists(t, "cobbler_profile.foo", &profile),
@@ -121,66 +122,74 @@ func testAccCobblerCheckProfileExists(t *testing.T, n string, profile *cobbler.P
 	}
 }
 
-var testAccCobblerProfile_basic = `
+func testAccCobblerProfile_basic(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
 		name = "foo"
 		distro = "${cobbler_distro.foo.name}"
-	}`
+	}`, repoName)
+}
 
-var testAccCobblerProfile_change_1 = `
+func testAccCobblerProfile_change_1(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
 		name = "foo"
 		comment = "I am a profile"
 		distro = "${cobbler_distro.foo.name}"
-	}`
+	}`, repoName)
+}
 
-var testAccCobblerProfile_change_2 = `
+func testAccCobblerProfile_change_2(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
 		name = "foo"
 		comment = "I am a profile again"
 		distro = "${cobbler_distro.foo.name}"
-	}`
+	}`, repoName)
+}
 
-var testAccCobblerProfile_withRepo = `
+func testAccCobblerProfile_withRepo(repoName string) string {
+	return fmt.Sprintf(`
 	resource "cobbler_distro" "foo" {
 		name = "foo"
 		breed = "ubuntu"
 		os_version = "trusty"
 		arch = "x86_64"
-		kernel = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/linux"
-		initrd = "/var/www/cobbler/ks_mirror/Ubuntu-14.04/install/netboot/ubuntu-installer/amd64/initrd.gz"
+		kernel = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/linux"
+		initrd = "/var/www/cobbler/ks_mirror/%[1]s/install/netboot/ubuntu-installer/amd64/initrd.gz"
 	}
 
 	resource "cobbler_profile" "foo" {
 		name = "foo"
 		comment = "I am a profile again"
 		distro = "${cobbler_distro.foo.name}"
-		repos = ["Ubuntu-14.04-x86_64"]
-	}`
+		repos = ["%[1]s"]
+	}`, repoName)
+}
