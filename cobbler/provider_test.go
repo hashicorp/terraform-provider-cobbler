@@ -43,4 +43,9 @@ func testAccCobblerPreCheck(t *testing.T) {
 	if v == "" {
 		t.Fatal("COBBLER_URL must be set for acceptance tests.")
 	}
+
+	err := testAccCobblerProvider.Configure(terraform.NewResourceConfig(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
 }
