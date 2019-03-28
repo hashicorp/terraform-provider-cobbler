@@ -1,8 +1,6 @@
 package cobbler
 
 import (
-	"os"
-
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 )
@@ -14,34 +12,34 @@ func Provider() terraform.ResourceProvider {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Cobbler URL",
-				DefaultFunc: envDefaultFunc("COBBLER_URL"),
+				DefaultFunc: schema.EnvDefaultFunc("COBBLER_URL", nil),
 			},
 
 			"username": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The username for accessing Cobbler.",
-				DefaultFunc: envDefaultFunc("COBBLER_USERNAME"),
+				DefaultFunc: schema.EnvDefaultFunc("COBBLER_USERNAME", nil),
 			},
 
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The password for accessing Cobbler.",
-				DefaultFunc: envDefaultFunc("COBBLER_PASSWORD"),
+				DefaultFunc: schema.EnvDefaultFunc("COBBLER_PASSWORD", nil),
 			},
 
 			"insecure": {
 				Type:        schema.TypeBool,
 				Optional:    true,
-				DefaultFunc: envDefaultFunc("COBBLER_INSECURE"),
+				DefaultFunc: schema.EnvDefaultFunc("COBBLER_INSECURE", nil),
 				Description: "Ignore SSL certificate warnings and errors.",
 			},
 
 			"cacert_file": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: envDefaultFunc("COBBLER_CACERT_FILE"),
+				DefaultFunc: schema.EnvDefaultFunc("COBBLER_CACERT_FILE", nil),
 				Description: "The path or contents of an SSL CA certificate",
 			},
 		},
@@ -73,21 +71,4 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	}
 
 	return &config, nil
-}
-
-func envDefaultFunc(k string) schema.SchemaDefaultFunc {
-	return func() (interface{}, error) {
-		if v := os.Getenv(k); v != "" {
-			return v, nil
-		}
-
-		return nil, nil
-	}
-}
-
-func envDefaultFuncAllowMissing(k string) schema.SchemaDefaultFunc {
-	return func() (interface{}, error) {
-		v := os.Getenv(k)
-		return v, nil
-	}
 }
