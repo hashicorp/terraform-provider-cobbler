@@ -1,59 +1,26 @@
-# Terraform Provider
+# Cobbler Terraform Provider
 
-- Website: <https://www.terraform.io>
-- [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
-- Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
+The Cobbler provider is used to interact with a locally installed Cobbler service.\
+The provider needs to be configured with the proper credentials before it can be used.
 
-<img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-hashicorp.svg" width="600px">
+Original code by [Joe Topjian](https://github.com/jtopjian).
 
-## Requirements
+## Prerequisites
 
-- [Terraform](https://www.terraform.io/downloads.html) 0.12.x
-- [Go](https://golang.org/doc/install) 1.14 (to build the provider plugin)
+- [Terraform](https://terraform.io), 0.12 and above
+- [Cobbler](https://cobbler.github.io/), release 3.2.0 (or higher)
 
-## Building The Provider
+## Using the Provider
 
-Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-cobbler`
+Full documentation can be found in the [`docs`](/docs) directory.
 
-```sh
-$ mkdir -p $GOPATH/src/github.com/terraform-providers; cd $GOPATH/src/github.com/terraform-providers
-$ git clone git@github.com:terraform-providers/terraform-provider-cobbler
-```
+### Terraform 0.13 and above
 
-Enter the provider directory and build the provider
+**[WIP]** You can use the provider via the [Terraform provider registry](hxxps://registry.terraform.io/providers/cobbler/cobbler).
 
-```sh
-$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-cobbler
-$ make build
-```
+### Terraform 0.12 or manual installation
 
-## Using the provider
+You can download a pre-built binary from the [releases](https://github.com/cobbler/terraform-provider-cobbler/releases/)
+ page, these are built using [GoReleaser](https://goreleaser.com/) (the [configuration](.goreleaser.yml) is in the repo).
 
-## Fill in for each provider
-
-## Developing the Provider
-
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.14+ is *required*). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
-
-To compile the provider, run `make build`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
-
-```sh
-$ make build
-...
-$ $GOPATH/bin/terraform-provider-cobbler
-...
-```
-
-In order to test the provider, you can simply run `make test`.
-
-```sh
-$ make test
-```
-
-In order to run the full suite of Acceptance tests, run `make testacc`.
-
-*Note:* Acceptance tests create real resources, and often cost money to run.
-
-```sh
-$ make testacc
-```
+If you want to build from source, you can simply use `make` in the root of the repository.
